@@ -1,5 +1,5 @@
 const API_BASE_URL = "http://localhost:8082/api/relatorios/analises";
-const LOGIN_URL = "http://localhost:8081/login.html";
+const LOGIN_URL = "http://localhost:5500/login.html";
 
 function getAuthToken() {
     const cookies = document.cookie.split("; ");
@@ -11,7 +11,7 @@ function getAuthHeaders() {
     const token = getAuthToken();
     return {
         "Content-Type": "application/json",
-        ...(token && { "Authorization": `Bearer ${token}` })
+        ...(token && { "Authorization": `jwt_token=${token}` })
     };
 }
 
@@ -28,7 +28,7 @@ function construirQueryString(params = {}) {
 
 async function tratarRespostaJson(response) {
     if (response.status === 401) {
-        window.location.replace(LOGIN_URL);
+        // window.location.replace(LOGIN_URL);
         throw new Error("Sessão expirada. Faça login novamente.");
     }
     if (response.status === 403) {
@@ -55,8 +55,9 @@ export async function baixarArquivoAnalise(templateId, formato, filtros = {}) {
 
     const response = await fetch(`${API_BASE_URL}/${templateId}/exportar/${formato}${qs}`, {
         method: "GET",
+        credentials: "include",
         headers: {
-            ...(token && { "Authorization": `Bearer ${token}` })
+            ...(token && { "Authorization": `jwt_token=${token}` })
         }
     });
 

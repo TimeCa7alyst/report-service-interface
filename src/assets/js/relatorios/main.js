@@ -13,6 +13,8 @@ import {
 
 let formatoSelecionado = "pdf";
 
+const REDIRECT_URL = "http://localhost:5500/login.html";
+
 document.addEventListener("DOMContentLoaded", async () => {
     if (!verificarSessaoValida()) return;
 
@@ -20,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("btn-logout")?.addEventListener("click", () => {
         document.cookie = "jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        window.location.replace("http://localhost:8081/login.html");
+        window.location.replace(REDIRECT_URL);
     });
 
     if (templateAtual) {
@@ -93,7 +95,7 @@ async function carregarDados(templateId) {
 function verificarSessaoValida() {
     const cookie = document.cookie.split("; ").find(row => row.startsWith("jwt_token="));
     if (!cookie) {
-        window.location.replace("http://localhost:8081/login.html");
+        window.location.replace(REDIRECT_URL);
         return false;
     }
 
@@ -104,13 +106,13 @@ function verificarSessaoValida() {
 
         if (payload.exp && payload.exp < agoraEmSegundos) {
             document.cookie = "jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            window.location.replace("http://localhost:8081/login.html");
+            window.location.replace(REDIRECT_URL);
             return false;
         }
         return true;
     } catch {
         document.cookie = "jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        window.location.replace("http://localhost:8081/login.html");
+        window.location.replace(REDIRECT_URL);
         return false;
     }
 }
