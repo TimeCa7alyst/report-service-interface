@@ -16,12 +16,18 @@ let formatoSelecionado = "pdf";
 const REDIRECT_URL = "http://localhost:5500/login.html";
 
 document.addEventListener("DOMContentLoaded", async () => {
+    inicializarTema();
+
     if (!verificarSessaoValida()) return;
+
+    preencherPerfilSidebar();
 
     const templateAtual = document.body.dataset.analise;
 
     document.getElementById("btn-logout")?.addEventListener("click", () => {
         document.cookie = "jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        localStorage.removeItem("token");
+        sessionStorage.clear();
         window.location.replace(REDIRECT_URL);
     });
 
@@ -81,6 +87,57 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 });
+
+function inicializarTema() {
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const iconMoon = document.getElementById("icon-moon");
+    const iconSun = document.getElementById("icon-sun");
+
+    function atualizarIconesTema(theme) {
+        if (!iconMoon || !iconSun) return;
+        iconMoon.style.display = theme === "dark" ? "none" : "block";
+        iconSun.style.display = theme === "dark" ? "block" : "none";
+    }
+
+    atualizarIconesTema(document.documentElement.getAttribute("data-theme") || "light");
+
+    themeToggleBtn?.addEventListener("click", () => {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        atualizarIconesTema(newTheme);
+    });
+}
+
+function preencherPerfilSidebar() {
+    const cookie = document.cookie.split("; ").find(row => row.startsWith("jwt_token="));
+    if (!cookie) return;
+
+    try {
+        const token = cookie.split("=")[1];
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        const email = payload.sub || payload.email || "usuario@acrillservice.com";
+        const roles = Array.isArray(payload.roles) ? payload.roles : [];
+        const rolePrincipal = roles.length > 0
+            ? (typeof roles[0] === "object" ? (roles[0].name ?? roles[0].authority) : String(roles[0])).replace(/^ROLE_/i, "")
+            : "ADMIN";
+
+        const avatarEl = document.getElementById("sidebar-user-avatar");
+        const emailEl = document.getElementById("sidebar-user-email");
+        const roleEl = document.getElementById("sidebar-user-role");
+
+        if (avatarEl) avatarEl.textContent = email.charAt(0).toUpperCase();
+        if (emailEl) {
+            emailEl.textContent = email;
+            emailEl.title = email;
+        }
+        if (roleEl) roleEl.textContent = rolePrincipal.toUpperCase();
+    } catch (_) {
+    }
+}
 
 async function carregarDados(templateId) {
     try {
