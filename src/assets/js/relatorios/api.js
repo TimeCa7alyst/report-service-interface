@@ -11,7 +11,7 @@ function getAuthHeaders() {
     const token = getAuthToken();
     return {
         "Content-Type": "application/json",
-        ...(token && { "Authorization": `jwt_token=${token}` })
+        ...(token && { "Authorization": `Bearer ${token}` })
     };
 }
 
@@ -55,9 +55,8 @@ export async function baixarArquivoAnalise(templateId, formato, filtros = {}) {
 
     const response = await fetch(`${API_BASE_URL}/${templateId}/exportar/${formato}${qs}`, {
         method: "GET",
-        credentials: "include",
         headers: {
-            ...(token && { "Authorization": `jwt_token=${token}` })
+            ...(token && { "Authorization": `Bearer ${token}` })
         }
     });
 

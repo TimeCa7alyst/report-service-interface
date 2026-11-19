@@ -138,8 +138,8 @@ export const CONFIG_TEMPLATES = {
         ],
         kpis: [
             { key: "mediaGeral", label: "Nota Média Geral", format: (v) => `${Number(v || 0).toFixed(1)} ★` },
-            { key: "promotores", label: "Positivas", format: (v) => String(v ?? 0).padStart(2, "0") },
-            { key: "detratores", label: "Negativas", format: (v) => String(v ?? 0).padStart(2, "0") }
+            { key: "positivas", label: "Positivas", format: (v) => String(v ?? 0).padStart(2, "0") },
+            { key: "negativas", label: "Negativas", format: (v) => String(v ?? 0).padStart(2, "0") }
         ],
         colunas: ["ID Venda", "Cliente", "Tipo", "Data Venda", "Valor Final", "Nota", "Classificação"],
         renderLinha: (item) => `
